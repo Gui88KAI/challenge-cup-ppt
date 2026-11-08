@@ -1,0 +1,87 @@
+# challenge-cup-ppt
+
+做挑战杯 / 互联网+ / 创赛路演 PPT 的 agent skill：从 100GB+ 模板素材库里按需取用，按九步工作流产出可上台的 PPT。
+
+## 这是什么
+
+一个给 AI agent 用的技能包（Skill），包含：
+
+| 文件 | 作用 |
+| --- | --- |
+| `SKILL.md` | 技能主体：触发条件、九步工作流、设计规则、坑、验证清单 |
+| `references/` | 素材地图、配色与版式、字体与动画坑、完整经验文档 |
+| `scripts/find_template.py` | 在模板索引里检索，避免加载整个素材库 |
+| `scripts/pptx_inspect.py` | PPTX 体检：页数、版式、字体、字号、占位符残留 |
+| `assets/模板索引.json` | 468 个模板包 / 2697 个 pptx 的索引（赛道分类、预览图数、字体数、体积） |
+
+## 核心思路：渐进式读取，不加载全量
+
+素材库 100+ GB，绝对不要整体加载。三层读取：
+
+1. **查索引**（1.2 MB，秒级）
+   ```bash
+   python3 scripts/find_template.py 蓝色 科技 --limit 5
+   python3 scripts/find_template.py --cat 红旅非遗 --min-pptx 20
+   ```
+2. **只解压命中包的预览图**（几十 MB）挑模板
+3. **只解压选中的那一个 pptx**
+
+```bash
+unzip "$PPT_LIBRARY_ZIP" "<包路径>/*预览*" -d /tmp/ppt
+unzip "$PPT_LIBRARY_ZIP" "<包路径>/xxx.pptx" -d /tmp/ppt
+```
+
+## 安装
+
+```bash
+git clone https://github.com/Gui88KAI/challenge-cup-ppt.git
+cp -r challenge-cup-ppt ~/.agents/skills/
+```
+
+其他 agent（Claude Code / OpenClaw / Cursor 等）也可以直接把 `SKILL.md` 作为指令读入，脚本按需调用。
+
+## 素材库
+
+素材库本体（约 103 GB，6590 个文件）**不在本仓库**：
+
+- GitHub 单文件上限 100 MB，单仓库建议 < 5 GB，103 GB 无法托管
+- 本仓库只放**索引 + 脚本 + 经验**，agent 按索引到本地素材库取用
+
+用环境变量指定素材库位置：
+
+```bash
+export PPT_LIBRARY_ZIP=/path/to/挑战杯PPT制作素材库.zip   # 默认 /sdcard/Download/DSH-Go/...
+```
+
+素材库结构：
+
+```
+挑战杯PPT素材合集/
+├── 01-百度网盘-999套PPT模板/   74 GB  通用模板库 + 国赛创赛模板 + 字体库
+├── 02-夸克-创赛挑战杯/         28 GB  按赛道配色分好的创赛模板
+└── PPT制作经验.md
+```
+
+## 快速开始
+
+```
+1. 需求访谈 → 01-需求.md（赛道、时长页数、必讲模块、现场设备）
+2. 建项目目录
+3. 检索素材 → 02-检索结果.md（用 find_template.py）
+4. 选模板（3 选 1，先看预览图）→ 03-选型.md
+5. 模板体检 → 04-模板结构.md（pptx_inspect.py）
+6. 写文案大纲 → 05-大纲.md（一页一个结论，≤60 字）
+7. 版式映射 → 06-映射表.md（2–3 种内容版式循环）
+8. 生成 → python-pptx 脚本 / 替换说明书
+9. 检查交付 → 07-检查报告.md
+```
+
+## 依赖
+
+```bash
+pip install python-pptx
+```
+
+## License
+
+MIT
