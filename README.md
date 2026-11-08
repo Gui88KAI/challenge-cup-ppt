@@ -44,8 +44,9 @@ cp -r challenge-cup-ppt ~/.agents/skills/
 
 素材库本体（约 103 GB，6590 个文件）**不在本仓库**：
 
-- GitHub 单文件上限 100 MB，单仓库建议 < 5 GB，103 GB 无法托管
-- 本仓库只放**索引 + 脚本 + 经验**，agent 按索引到本地素材库取用
+- GitHub 单文件上限 100 MB（素材库里 174 个 pptx 超限），单仓库建议 < 5 GB，102 GB 无法托管
+- 本仓库只放**索引 + 脚本 + 经验**，素材库用网盘托管，下载链接见 [`library/sources.json`](library/sources.json)
+- agent 先查索引，再只下载/解压需要的那一个包
 
 用环境变量指定素材库位置：
 
